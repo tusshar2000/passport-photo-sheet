@@ -52,9 +52,18 @@
   .ribbon {
     background: var(--ink); color: #fff;
     display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap;
-    text-align: center; font-size: .95rem; font-weight: 500;
-    padding: 10px 14px;
+    text-align: center; font-size: 1.1rem; font-weight: 600;
+    padding: 14px;
   }
+  .coffee-top {
+    display: inline-block;
+    background: var(--marigold); color: #24292f;
+    font-family: "Baloo 2", "Mukta", sans-serif; font-weight: 700; font-size: 1.15rem;
+    padding: 12px 24px; border-radius: 8px; text-decoration: none;
+    margin-top: 18px;
+    box-shadow: 0 2px 0 #d9b53a;
+  }
+  .coffee-top:hover { background: #ffe066; }
   .ribbon select {
     font: inherit; font-size: .9rem; font-weight: 600;
     color: var(--ink); background: #fff;
@@ -171,6 +180,7 @@
   <header>
     <h1 data-i18n="h1">Print your own passport size photos</h1>
     <p class="price-line" data-i18n="price">The studio charges <s>₹60–100 for 8 photos</s>. One A4 colour print at the photocopy shop gives you <span class="hl">30 photos for ₹10</span>. Cut along the printed lines.</p>
+    <a class="coffee-top" href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener"><span data-i18n="coffee">☕ Did this save you money? Buy me a coffee</span></a>
   </header>
 
   <section>
@@ -255,7 +265,7 @@
     </ul>
   </section>
 </main>
-<footer data-i18n="footer">Free · Works offline · Nothing is uploaded, ever<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">Did this save you money? Buy me a coffee</a></span></footer>
+<footer data-i18n="footer">Free · Works offline · Nothing is uploaded, ever<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">Did this save you money? Buy me a coffee</a> · <a href="https://github.com/tusshar2000/passport-photo-sheet" target="_blank" rel="noopener">Open source on GitHub</a></span></footer>
 
 <script>
 'use strict';
@@ -311,7 +321,8 @@ const I18N = {
     noH: 'Where it is not',
     no1: 'Passport application. Passport Seva Kendra takes your photo there; don’t bring one',
     no2: 'Visa applications, and any form that says “photograph on photo paper”. For those, choose the <b>4×6 photo paper</b> option above and ask a studio to print that one sheet (₹15–30, borderless) instead of buying their photo package',
-    footer: 'Free · Works offline · Nothing is uploaded, ever<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">Did this save you money? Buy me a coffee</a></span>',
+    coffee: '☕ Did this save you money? Buy me a coffee',
+    footer: 'Free · Works offline · Nothing is uploaded, ever<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">Did this save you money? Buy me a coffee</a> · <a href="https://github.com/tusshar2000/passport-photo-sheet" target="_blank" rel="noopener">Open source on GitHub</a></span>',
   },
   hi: {
     docTitle: 'पासपोर्ट फ़ोटो शीट मेकर: एक ₹10 प्रिंट से 30 फ़ोटो',
@@ -357,7 +368,8 @@ const I18N = {
     noH: 'कहाँ नहीं चलता',
     no1: 'पासपोर्ट आवेदन। पासपोर्ट सेवा केंद्र वहीं फ़ोटो खींचता है; साथ ले जाने की ज़रूरत नहीं',
     no2: 'वीज़ा आवेदन, और जिस फ़ॉर्म में “photo paper पर फ़ोटो” लिखा हो। उसके लिए ऊपर <b>4×6 फ़ोटो पेपर</b> चुनें और स्टूडियो से सिर्फ़ वही एक शीट छपवाएँ (₹15–30, बिना बॉर्डर), पूरा पैकेज न लें',
-    footer: 'हमेशा मुफ़्त · बिना इंटरनेट चलता है · कुछ भी अपलोड नहीं होता<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">पैसे बचे? एक कॉफ़ी पिला दें</a></span>',
+    coffee: '☕ पैसे बचे? एक कॉफ़ी पिला दें',
+    footer: 'हमेशा मुफ़्त · बिना इंटरनेट चलता है · कुछ भी अपलोड नहीं होता<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">पैसे बचे? एक कॉफ़ी पिला दें</a> · <a href="https://github.com/tusshar2000/passport-photo-sheet" target="_blank" rel="noopener">GitHub पर ओपन सोर्स</a></span>',
   },
 };
 
