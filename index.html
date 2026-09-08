@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passport Photo Sheet Maker: 30 photos from one ₹10 print</title>
+<meta name="description" content="Make a printable A4 sheet of passport size photos at home. 35x45mm, US visa 51x51mm, stamp size. Free, works offline, photo never leaves your phone.">
+<meta name="theme-color" content="#1E3D8F">
+<link rel="canonical" href="https://passport-photo-sheet.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Print 30 passport size photos for ₹10">
+<meta property="og:description" content="Studios charge ₹60-100 for 8 photos. Make an A4 sheet of 30 at home, print at any photocopy shop. Free, your photo never leaves your phone.">
+<meta property="og:url" content="https://passport-photo-sheet.pages.dev/">
+<meta property="og:image" content="https://passport-photo-sheet.pages.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Passport Photo Sheet Maker",
+"applicationCategory":"UtilityApplication","operatingSystem":"Any",
+"offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},
+"description":"Make a printable A4 sheet of 30 passport size photos (35x45mm, 51x51mm, stamp size) in the browser. Nothing is uploaded.","inLanguage":["en","hi"]}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Mukta:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1E3D8F;          /* ballpoint blue */
+    --text: #24292f;
+    --muted: #49505c;
+    --paper: #ffffff;
+    --desk: #edf0f5;
+    --rule: #dfe3ea;
+    --marigold: #FFD84D;     /* highlighter */
+    --ok: #1a7a3c;
+    --stop: #b3261e;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: "Mukta", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 19px; line-height: 1.6;
+    color: var(--text);
+    background: var(--desk);
+  }
+  h1, h2, .stepnum, button {
+    font-family: "Baloo 2", "Mukta", system-ui, sans-serif;
+  }
+
+  /* privacy ribbon + language switch */
+  .ribbon {
+    background: var(--ink); color: #fff;
+    display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap;
+    text-align: center; font-size: .95rem; font-weight: 500;
+    padding: 10px 14px;
+  }
+  .ribbon select {
+    font: inherit; font-size: .9rem; font-weight: 600;
+    color: var(--ink); background: #fff;
+    border: 0; border-radius: 4px; padding: 4px 8px;
+    width: auto; min-width: 0; cursor: pointer;
+  }
+
+  /* the page as one printed sheet */
+  main {
+    max-width: 720px; margin: 24px auto 48px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    box-shadow: 0 2px 10px rgba(30, 61, 143, .07);
+    padding: 32px clamp(18px, 5vw, 44px) 40px;
+  }
+  @media (max-width: 700px) { main { margin: 0; border-left: 0; border-right: 0; } }
+
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 20px; }
+  h1 {
+    font-size: clamp(1.8rem, 6vw, 2.4rem); font-weight: 700;
+    line-height: 1.2; color: var(--ink); margin: 0 0 10px;
+    letter-spacing: -.01em;
+  }
+  .price-line { margin: 0; font-size: 1.1rem; }
+  .price-line s { color: var(--muted); }
+  .hl {
+    background: var(--marigold);
+    font-weight: 600; padding: 1px 5px; border-radius: 3px;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  }
+
+  section { padding: 34px 0; border-bottom: 1px solid var(--rule); }
+  section:last-of-type { border-bottom: 0; }
+  h2 { font-size: 1.35rem; font-weight: 600; margin: 0 0 16px; color: var(--text); }
+  .stepnum { color: var(--ink); font-weight: 700; margin-right: 6px; }
+
+  /* the "affix photograph" box, the one loud element */
+  .affix {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px;
+    width: min(240px, 70vw); aspect-ratio: 35/45;
+    margin: 0 auto;
+    border: 2.5px dashed var(--ink);
+    color: var(--ink);
+    text-align: center; padding: 16px; cursor: pointer;
+    font-size: 1rem; line-height: 1.45;
+    background: #f7f9fe;
+  }
+  .affix:hover, .affix.over { background: #eef3ff; }
+  .affix b { font-family: "Baloo 2", sans-serif; font-size: 1.1rem; }
+  .affix .cam { font-size: 1.9rem; line-height: 1; }
+  .affix input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .affix.loaded { border-style: solid; border-color: var(--ok); color: var(--ok); background: #f2faf4; }
+
+  label.field { display: block; font-weight: 600; font-size: 1rem; margin: 20px 0 6px; }
+  select, input[type=text], input[type=number] {
+    font: inherit; color: var(--text);
+    padding: 12px; border: 1px solid #b9c0cc; border-radius: var(--radius);
+    width: 100%; max-width: 100%; min-width: 0; background: #fff;
+  }
+  select { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+  .row { display: flex; gap: 12px; } .row > div { flex: 1; min-width: 0; }
+  @media (max-width: 600px) { .row { flex-direction: column; gap: 0; } }
+
+  #stageWrap { position: relative; width: min(280px, 76vw); margin: 0 auto; touch-action: none; }
+  #stage { display: block; width: 100%; border: 1px solid var(--rule); cursor: grab; background: #eceef2; }
+  input[type=range] { width: 100%; accent-color: var(--ink); margin-top: 10px; }
+
+  button {
+    font-size: 1.15rem; font-weight: 600;
+    padding: 15px 20px; border: 0; border-radius: var(--radius); cursor: pointer;
+  }
+  .primary { background: var(--ink); color: #fff; width: 100%; margin-top: 20px; }
+  .primary:hover { background: #16327a; }
+  .dl { background: #fff; color: var(--ink); border: 2px solid var(--ink); flex: 1; }
+  .dl:hover { background: #f0f4ff; }
+  :focus-visible { outline: 3px solid var(--marigold); outline-offset: 2px; }
+
+  #editor, #result { display: none; }
+  #preview { display: block; width: 100%; max-width: 320px; margin: 0 auto 16px; border: 1px solid var(--rule); }
+  .hint { font-size: 1rem; color: var(--muted); margin-top: 14px; }
+  .hint b { color: var(--text); }
+
+  /* legend explaining the crop guides */
+  .guide-legend { list-style: none; padding: 0; margin: 0 0 18px; }
+  .guide-legend li { display: flex; align-items: center; gap: 14px; padding: 7px 0; }
+  .gl { flex: 0 0 40px; height: 30px; position: relative; }
+  .gl-v::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 3px dashed var(--ink); }
+  .gl-h::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; border-top: 3px dashed var(--ink); }
+  .gl-o::before { content: ""; position: absolute; inset: 0 8px; border: 3px solid var(--ink); border-radius: 50%; }
+
+  .oklist { list-style: none; padding: 0; margin: 0; }
+  .oklist li { padding: 7px 0 7px 32px; position: relative; }
+  .oklist li::before { position: absolute; left: 0; font-weight: 700; }
+  .oklist .yes::before { content: "✓"; color: var(--ok); }
+  .oklist .no::before  { content: "✗"; color: var(--stop); }
+  .oklist .no { color: #6b4a47; }
+
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 16px 32px; }
+  footer a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .coffee { display: block; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span data-i18n="ribbon">🔒 Your photo never leaves this phone. No upload, no server. It even works with internet switched off.</span>
+  <select id="langSel" aria-label="Language / भाषा">
+    <option value="en">English</option>
+    <option value="hi">हिन्दी</option>
+  </select>
+</div>
+<main>
+  <header>
+    <h1 data-i18n="h1">Print your own passport size photos</h1>
+    <p class="price-line" data-i18n="price">The studio charges <s>₹60–100 for 8 photos</s>. One A4 colour print at the photocopy shop gives you <span class="hl">30 photos for ₹10</span>. Cut along the printed lines.</p>
+  </header>
+
+  <section>
+    <h2><span class="stepnum">1.</span><span data-i18n="s1">Choose your photo</span></h2>
+    <label class="affix" id="affix">
+      <span class="cam">📷</span>
+      <b>Affix recent photograph here</b>
+      <span class="affsub">tap to choose from gallery,<br>or take a photo now</span>
+      <input type="file" id="file" accept="image/*">
+    </label>
+    <p class="hint" style="text-align:center" data-i18n="whatsapp">Use the original camera photo. WhatsApp-forwarded images are compressed and print blurry, so ask for the file “as document” instead.</p>
+  </section>
+
+  <div id="editor">
+  <section>
+    <h2><span class="stepnum">2.</span><span data-i18n="s2">Position your face</span></h2>
+    <p class="hint" style="margin:0 0 14px" data-i18n="guideIntro">Drag the photo with your finger. Use the slider below to zoom. Match these three guides and your photo will come out straight and centred:</p>
+    <ul class="guide-legend">
+      <li><span class="gl gl-o" aria-hidden="true"></span><span data-i18n="glOval"><b>Oval:</b> your whole face fits inside the bright oval. Zoom in or out until it does.</span></li>
+      <li><span class="gl gl-v" aria-hidden="true"></span><span data-i18n="glV"><b>Up-down line:</b> keep your nose on this line. Equal face on both sides means the photo is not tilted.</span></li>
+      <li><span class="gl gl-h" aria-hidden="true"></span><span data-i18n="glH"><b>Left-right line:</b> keep both eyes on this line. That puts your face at the correct height.</span></li>
+    </ul>
+    <div id="stageWrap"><canvas id="stage"></canvas></div>
+    <input type="range" id="zoom" min="100" max="300" value="115" aria-label="Zoom">
+    <p class="hint" id="lowres" style="display:none;color:var(--stop)" data-i18n="lowres">⚠ This photo doesn’t have enough pixels at this zoom, so the print will look soft. Zoom out, or use the original full-size photo.</p>
+  </section>
+
+  <section>
+    <h2><span class="stepnum">3.</span><span data-i18n="s3">Pick size and paper</span></h2>
+    <div class="row">
+      <div>
+        <label class="field" for="size" data-i18n="sizeLabel">Photo size</label>
+        <select id="size">
+          <option value="35x45" selected data-i18n="opt3545">35 × 45 mm (Indian passport size)</option>
+          <option value="51x51" data-i18n="opt5151">51 × 51 mm (US visa, 2×2 in)</option>
+          <option value="20x25" data-i18n="opt2025">20 × 25 mm (stamp size)</option>
+          <option value="custom" data-i18n="optCustom">Custom size…</option>
+        </select>
+      </div>
+      <div>
+        <label class="field" for="sheet" data-i18n="sheetLabel">Print on</label>
+        <select id="sheet">
+          <option value="a4" selected data-i18n="optA4">A4 paper (₹10 print)</option>
+          <option value="4x6" data-i18n="opt46">4×6 in photo paper (studio)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" id="customBox" style="display:none">
+      <div><label class="field" for="cw" data-i18n="cwLabel">Width (mm)</label><input type="number" id="cw" value="35" min="15" max="80"></div>
+      <div><label class="field" for="ch" data-i18n="chLabel">Height (mm)</label><input type="number" id="ch" value="45" min="15" max="80"></div>
+    </div>
+
+    <label class="field" for="strip" data-i18n="stripLabel">Name and date under each photo (optional, some exam forms ask for it)</label>
+    <input type="text" id="strip" placeholder="RAHUL SHARMA  07-09-2026" maxlength="40">
+
+    <button class="primary" id="make"><span data-i18n="btnMake">Make my sheet</span> (<span id="count"></span>)</button>
+  </section>
+  </div>
+
+  <section id="result">
+    <h2><span class="stepnum">4.</span><span data-i18n="s4">Print it</span></h2>
+    <canvas id="preview"></canvas>
+    <div class="row">
+      <button class="dl" id="dlJpg" data-i18n="saveJpg">Save JPG</button>
+      <button class="dl" id="dlPdf" data-i18n="savePdf">Save PDF</button>
+    </div>
+    <p class="hint" data-i18n="printHint">At the shop, say: <b>“print at 100% size, no fit-to-page, no scaling.”</b> This instruction is also printed on the sheet’s margin. After printing, measure one photo: 35 mm is about the width of a matchbox. If it’s smaller, the shop’s printer scaled it.</p>
+  </section>
+
+  <section>
+    <h2 data-i18n="okH">Where a plain paper print is accepted</h2>
+    <ul class="oklist">
+      <li class="yes" data-i18n="ok1">School and college admission forms</li>
+      <li class="yes" data-i18n="ok2">Exam applications and admit cards (SSC, UPSC, NEET, JEE, banking, railways)</li>
+      <li class="yes" data-i18n="ok3">Bank KYC, PAN correction, most government office forms</li>
+    </ul>
+    <h2 style="margin-top:22px" data-i18n="noH">Where it is not</h2>
+    <ul class="oklist">
+      <li class="no" data-i18n="no1">Passport application. Passport Seva Kendra takes your photo there; don’t bring one</li>
+      <li class="no" data-i18n="no2">Visa applications, and any form that says “photograph on photo paper”. For those, choose the <b>4×6 photo paper</b> option above and ask a studio to print that one sheet (₹15–30, borderless) instead of buying their photo package</li>
+    </ul>
+  </section>
+</main>
+<footer data-i18n="footer">Free · Works offline · Nothing is uploaded, ever<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">Did this save you money? Buy me a coffee</a></span></footer>
+
+<script>
+'use strict';
+const PX = 300 / 25.4;               // px per mm at 300 DPI
+const SHEETS = { a4:{w:210,h:297,margin:6}, '4x6':{w:152.4,h:101.6,margin:1.5} };
+const GAP = 3;                        // cutting gap, mm
+const STRIP = 5;                      // name strip height, mm
+const JPEG_Q = 0.95;                  // print-grade; the sheet stays well under 5 MB
+
+/* ---------- languages: add one object (and a Google Fonts line if the script differs) per language ---------- */
+const I18N = {
+  en: {
+    docTitle: 'Passport Photo Sheet Maker: 30 photos from one ₹10 print',
+    ribbon: '🔒 Your photo never leaves this phone. No upload, no server. It even works with internet switched off.',
+    h1: 'Print your own passport size photos',
+    price: 'The studio charges <s>₹60–100 for 8 photos</s>. One A4 colour print at the photocopy shop gives you <span class="hl">30 photos for ₹10</span>. Cut along the printed lines.',
+    s1: 'Choose your photo',
+    affixTitle: 'Affix recent photograph here',
+    affixSub: 'tap to choose from gallery,<br>or take a photo now',
+    affixLoaded: 'Photo added ✓',
+    affixLoadedSub: 'tap to choose a different one',
+    whatsapp: 'Use the original camera photo. WhatsApp-forwarded images are compressed and print blurry, so ask for the file “as document” instead.',
+    s2: 'Position your face',
+    guideIntro: 'Drag the photo with your finger. Use the slider below to zoom. Match these three guides and your photo will come out straight and centred:',
+    glOval: '<b>Oval:</b> your whole face fits inside the bright oval. Zoom in or out until it does.',
+    glV: '<b>Up-down line:</b> keep your nose on this line. Equal face on both sides means the photo is not tilted.',
+    glH: '<b>Left-right line:</b> keep both eyes on this line. That puts your face at the correct height.',
+    lowres: '⚠ This photo doesn’t have enough pixels at this zoom, so the print will look soft. Zoom out, or use the original full-size photo.',
+    s3: 'Pick size and paper',
+    sizeLabel: 'Photo size',
+    opt3545: '35 × 45 mm (Indian passport size)',
+    opt5151: '51 × 51 mm (US visa, 2×2 in)',
+    opt2025: '20 × 25 mm (stamp size)',
+    optCustom: 'Custom size…',
+    sheetLabel: 'Print on',
+    optA4: 'A4 paper (₹10 print)',
+    opt46: '4×6 in photo paper (studio)',
+    cwLabel: 'Width (mm)',
+    chLabel: 'Height (mm)',
+    stripLabel: 'Name and date under each photo (optional, some exam forms ask for it)',
+    btnMake: 'Make my sheet',
+    photosWord: 'photos',
+    tooBig: 'too big for sheet',
+    alertTooBig: 'Photo size too big for this sheet.',
+    s4: 'Print it',
+    saveJpg: 'Save JPG',
+    savePdf: 'Save PDF',
+    printHint: 'At the shop, say: <b>“print at 100% size, no fit-to-page, no scaling.”</b> This instruction is also printed on the sheet’s margin. After printing, measure one photo: 35 mm is about the width of a matchbox. If it’s smaller, the shop’s printer scaled it.',
+    okH: 'Where a plain paper print is accepted',
+    ok1: 'School and college admission forms',
+    ok2: 'Exam applications and admit cards (SSC, UPSC, NEET, JEE, banking, railways)',
+    ok3: 'Bank KYC, PAN correction, most government office forms',
+    noH: 'Where it is not',
+    no1: 'Passport application. Passport Seva Kendra takes your photo there; don’t bring one',
+    no2: 'Visa applications, and any form that says “photograph on photo paper”. For those, choose the <b>4×6 photo paper</b> option above and ask a studio to print that one sheet (₹15–30, borderless) instead of buying their photo package',
+    footer: 'Free · Works offline · Nothing is uploaded, ever<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">Did this save you money? Buy me a coffee</a></span>',
+  },
+  hi: {
+    docTitle: 'पासपोर्ट फ़ोटो शीट मेकर: एक ₹10 प्रिंट से 30 फ़ोटो',
+    ribbon: '🔒 आपकी फ़ोटो इसी फ़ोन में रहती है। कोई अपलोड नहीं, कोई सर्वर नहीं। इंटरनेट बंद हो तब भी चलता है।',
+    h1: 'पासपोर्ट साइज़ फ़ोटो खुद प्रिंट करें',
+    price: 'स्टूडियो <s>8 फ़ोटो के ₹60–100</s> लेता है। फोटोकॉपी दुकान पर एक A4 कलर प्रिंट से मिलती हैं <span class="hl">30 फ़ोटो सिर्फ़ ₹10 में</span>। छपी लाइनों पर काट लें।',
+    s1: 'अपनी फ़ोटो चुनें',
+    affixTitle: 'यहाँ नई फ़ोटो लगाएँ',
+    affixSub: 'गैलरी से चुनने के लिए टैप करें,<br>या अभी फ़ोटो खींचें',
+    affixLoaded: 'फ़ोटो लग गई ✓',
+    affixLoadedSub: 'दूसरी चुनने के लिए टैप करें',
+    whatsapp: 'कैमरे की ओरिजिनल फ़ोटो इस्तेमाल करें। WhatsApp से आई फ़ोटो दबी हुई होती है और धुंधली छपती है, इसलिए फ़ाइल “डॉक्यूमेंट के रूप में” मँगवाएँ।',
+    s2: 'चेहरा सही जगह रखें',
+    guideIntro: 'फ़ोटो को उँगली से खिसकाएँ। नीचे के स्लाइडर से ज़ूम करें। ये तीन निशान मिला लें, फ़ोटो सीधी और बीच में आएगी:',
+    glOval: '<b>अंडाकार घेरा:</b> पूरा चेहरा चमकीले घेरे के अंदर आए। ज़ूम घटा-बढ़ाकर बिठाएँ।',
+    glV: '<b>खड़ी लाइन:</b> नाक इस लाइन पर रखें। दोनों तरफ़ बराबर चेहरा यानी फ़ोटो टेढ़ी नहीं।',
+    glH: '<b>पड़ी लाइन:</b> दोनों आँखें इस लाइन पर रखें। इससे चेहरा सही ऊँचाई पर रहता है।',
+    lowres: '⚠ इस ज़ूम पर फ़ोटो में पिक्सेल कम हैं, प्रिंट धुंधला आएगा। ज़ूम कम करें या ओरिजिनल फ़ुल-साइज़ फ़ोटो लें।',
+    s3: 'साइज़ और कागज़ चुनें',
+    sizeLabel: 'फ़ोटो साइज़',
+    opt3545: '35 × 45 मिमी (भारतीय पासपोर्ट साइज़)',
+    opt5151: '51 × 51 मिमी (US वीज़ा, 2×2 इंच)',
+    opt2025: '20 × 25 मिमी (स्टाम्प साइज़)',
+    optCustom: 'अपना साइज़…',
+    sheetLabel: 'किस पर प्रिंट',
+    optA4: 'A4 कागज़ (₹10 प्रिंट)',
+    opt46: '4×6 इंच फ़ोटो पेपर (स्टूडियो)',
+    cwLabel: 'चौड़ाई (मिमी)',
+    chLabel: 'ऊँचाई (मिमी)',
+    stripLabel: 'हर फ़ोटो के नीचे नाम और तारीख़ (ज़रूरी नहीं, कुछ परीक्षा फ़ॉर्म माँगते हैं)',
+    btnMake: 'मेरी शीट बनाएँ',
+    photosWord: 'फ़ोटो',
+    tooBig: 'शीट के लिए बहुत बड़ा',
+    alertTooBig: 'यह फ़ोटो साइज़ इस शीट के लिए बहुत बड़ा है।',
+    s4: 'प्रिंट करें',
+    saveJpg: 'JPG सेव करें',
+    savePdf: 'PDF सेव करें',
+    printHint: 'दुकान पर कहें: <b>“100% साइज़ पर प्रिंट करो, फ़िट-टू-पेज नहीं, कोई स्केलिंग नहीं।”</b> यही निर्देश शीट के किनारे पर अंग्रेज़ी में भी छपा है। प्रिंट के बाद एक फ़ोटो नाप लें: 35 मिमी यानी माचिस की डिब्बी जितनी चौड़ाई। छोटी निकले तो दुकान के प्रिंटर ने साइज़ बदल दिया है।',
+    okH: 'सादे कागज़ का प्रिंट कहाँ चलता है',
+    ok1: 'स्कूल और कॉलेज के दाख़िले के फ़ॉर्म',
+    ok2: 'परीक्षा के फ़ॉर्म और एडमिट कार्ड (SSC, UPSC, NEET, JEE, बैंकिंग, रेलवे)',
+    ok3: 'बैंक KYC, PAN सुधार, ज़्यादातर सरकारी दफ़्तरों के फ़ॉर्म',
+    noH: 'कहाँ नहीं चलता',
+    no1: 'पासपोर्ट आवेदन। पासपोर्ट सेवा केंद्र वहीं फ़ोटो खींचता है; साथ ले जाने की ज़रूरत नहीं',
+    no2: 'वीज़ा आवेदन, और जिस फ़ॉर्म में “photo paper पर फ़ोटो” लिखा हो। उसके लिए ऊपर <b>4×6 फ़ोटो पेपर</b> चुनें और स्टूडियो से सिर्फ़ वही एक शीट छपवाएँ (₹15–30, बिना बॉर्डर), पूरा पैकेज न लें',
+    footer: 'हमेशा मुफ़्त · बिना इंटरनेट चलता है · कुछ भी अपलोड नहीं होता<span class="coffee">☕ <a href="https://buymeacoffee.com/tusshar2000" target="_blank" rel="noopener">पैसे बचे? एक कॉफ़ी पिला दें</a></span>',
+  },
+};
+
+const $ = id => document.getElementById(id);
+let lang = localStorage.getItem('lang') || 'en';
+const t = key => I18N[lang][key];
+
+function applyLang(){
+  const d = I18N[lang];
+  document.documentElement.lang = lang;
+  document.title = d.docTitle;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = d[el.dataset.i18n];
+    if (v != null) el.innerHTML = v;
+  });
+  const loaded = affix.classList.contains('loaded');
+  affix.querySelector('b').innerHTML = loaded ? d.affixLoaded : d.affixTitle;
+  affix.querySelector('.affsub').innerHTML = loaded ? d.affixLoadedSub : d.affixSub;
+  updateCount();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  $('langSel').value = lang;
+  applyLang();
+});
+document.getElementById('langSel').onchange = e => {
+  lang = e.target.value;
+  localStorage.setItem('lang', lang);
+  applyLang();
+};
+
+const stage = $('stage'), ctx = stage.getContext('2d');
+let img = null, scale = 1, minScale = 1, ox = 0, oy = 0;
+
+function hq(c){ c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; return c; }
+hq(ctx);
+
+function photoMM(){
+  const v = $('size').value;
+  if (v === 'custom') return { w:+$('cw').value || 35, h:+$('ch').value || 45 };
+  const [w,h] = v.split('x').map(Number);
+  return { w, h };
+}
+function photoPX(){ const p = photoMM(); return { w:Math.round(p.w*PX), h:Math.round(p.h*PX) }; }
+
+function layout(sheet, cellW, cellH){
+  const usableW = sheet.w - 2*sheet.margin, usableH = sheet.h - 2*sheet.margin;
+  const cols = Math.floor((usableW + GAP) / (cellW + GAP));
+  const rows = Math.floor((usableH + GAP) / (cellH + GAP));
+  const gw = cols*cellW + (cols-1)*GAP, gh = rows*cellH + (rows-1)*GAP;
+  return { cols, rows, ox:(sheet.w-gw)/2, oy:(sheet.h-gh)/2 };
+}
+
+function updateCount(){
+  const p = photoMM(), sheet = SHEETS[$('sheet').value];
+  const cellH = p.h + ($('strip').value.trim() ? STRIP : 0);
+  const L = layout(sheet, p.w, cellH);
+  $('count').textContent = L.cols > 0 && L.rows > 0 ? `${L.cols*L.rows} ${t('photosWord')}` : t('tooBig');
+}
+
+/* ---------- crop stage ---------- */
+function resetStage(){
+  const p = photoPX();
+  stage.width = p.w; stage.height = p.h;
+  hq(ctx);                                   // resizing a canvas resets its context settings
+  if (!img) return;
+  minScale = Math.max(p.w/img.width, p.h/img.height);
+  scale = minScale * $('zoom').value / 100;
+  ox = (p.w - img.width*scale)/2; oy = (p.h - img.height*scale)/2;
+  draw();
+}
+function clamp(){
+  ox = Math.min(0, Math.max(stage.width  - img.width*scale, ox));
+  oy = Math.min(0, Math.max(stage.height - img.height*scale, oy));
+}
+function draw(guide = true){
+  clamp();
+  ctx.drawImage(img, ox, oy, img.width*scale, img.height*scale);
+  // scale > 1 means the source has fewer pixels than the 300 DPI frame needs
+  $('lowres').style.display = scale > 1.05 ? 'block' : 'none';
+  if (!guide) return;
+  const w = stage.width, h = stage.height;
+  ctx.save();
+  // dim everything outside the face oval so centring is obvious
+  ctx.beginPath();
+  ctx.rect(0, 0, w, h);
+  ctx.ellipse(w/2, h*0.46, w*0.32, h*0.36, 0, 0, 7);
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.fill('evenodd');
+  ctx.strokeStyle = 'rgba(30,61,143,.9)'; ctx.lineWidth = Math.max(2, w/140);
+  ctx.beginPath(); ctx.ellipse(w/2, h*0.46, w*0.32, h*0.36, 0, 0, 7); ctx.stroke();
+  ctx.setLineDash([w/40, w/45]);
+  // eye line
+  ctx.beginPath(); ctx.moveTo(w*0.1, h*0.42); ctx.lineTo(w*0.9, h*0.42); ctx.stroke();
+  // vertical centre line: nose sits on it, equal space both sides = symmetric
+  ctx.beginPath(); ctx.moveTo(w/2, h*0.05); ctx.lineTo(w/2, h*0.95); ctx.stroke();
+  ctx.restore();
+}
+
+const affix = $('affix');
+function loadFile(f){
+  if (!f || !f.type.startsWith('image/')) return;
+  const i = new Image();
+  i.onload = () => {
+    img = i;
+    $('editor').style.display = 'block';
+    $('zoom').value = 115;
+    resetStage(); updateCount();
+    affix.classList.add('loaded');
+    affix.querySelector('b').innerHTML = t('affixLoaded');
+    affix.querySelector('.affsub').innerHTML = t('affixLoadedSub');
+  };
+  i.src = URL.createObjectURL(f);
+}
+$('file').onchange = e => loadFile(e.target.files[0]);
+affix.ondragover = e => { e.preventDefault(); affix.classList.add('over'); };
+affix.ondragleave = () => affix.classList.remove('over');
+affix.ondrop = e => { e.preventDefault(); affix.classList.remove('over'); loadFile(e.dataTransfer.files[0]); };
+
+$('zoom').oninput = () => {
+  if (!img) return;
+  const old = scale, cx = stage.width/2, cy = stage.height/2;
+  scale = minScale * $('zoom').value / 100;
+  ox = cx - (cx-ox)*scale/old; oy = cy - (cy-oy)*scale/old;
+  draw();
+};
+let drag = null;
+stage.onpointerdown = e => { drag = {x:e.clientX, y:e.clientY}; stage.setPointerCapture(e.pointerId); };
+stage.onpointermove = e => {
+  if (!drag || !img) return;
+  const k = stage.width / stage.getBoundingClientRect().width;
+  ox += (e.clientX-drag.x)*k; oy += (e.clientY-drag.y)*k;
+  drag = {x:e.clientX, y:e.clientY};
+  draw();
+};
+stage.onpointerup = () => drag = null;
+// ponytail: no pinch-zoom, slider covers it; add pinch handling if users complain
+
+$('size').onchange = () => { $('customBox').style.display = $('size').value==='custom' ? 'flex' : 'none'; resetStage(); updateCount(); };
+['sheet','cw','ch'].forEach(id => $(id).oninput = () => { if(id!=='sheet') resetStage(); updateCount(); });
+$('strip').oninput = updateCount;
+
+/* ---------- sheet compose ---------- */
+let sheetCanvas = null, sheetMM = null;
+
+$('make').onclick = () => {
+  if (!img) return;
+  const p = photoMM(), px = photoPX(), sheet = SHEETS[$('sheet').value];
+  const label = $('strip').value.trim();
+  const cellH = p.h + (label ? STRIP : 0);
+  const L = layout(sheet, p.w, cellH);
+  if (L.cols < 1 || L.rows < 1) { alert(t('alertTooBig')); return; }
+
+  const crop = document.createElement('canvas');
+  crop.width = px.w; crop.height = px.h;
+  draw(false);                                     // redraw stage without the guide overlay
+  hq(crop.getContext('2d')).drawImage(stage, 0, 0);
+  draw(true);
+
+  const W = Math.round(sheet.w*PX), H = Math.round(sheet.h*PX);
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = hq(c.getContext('2d'));
+  g.fillStyle = '#fff'; g.fillRect(0, 0, W, H);
+  g.strokeStyle = '#bbb'; g.lineWidth = 1;
+  g.fillStyle = '#000'; g.textAlign = 'center';
+  g.font = `${Math.round(2.6*PX)}px sans-serif`;
+  for (let r = 0; r < L.rows; r++) for (let cI = 0; cI < L.cols; cI++) {
+    const x = Math.round((L.ox + cI*(p.w+GAP))*PX), y = Math.round((L.oy + r*(cellH+GAP))*PX);
+    g.drawImage(crop, x, y, px.w, px.h);
+    g.strokeRect(x-0.5, y-0.5, px.w+1, Math.round(cellH*PX)+1);   // cut line
+    if (label) g.fillText(label, x+px.w/2, y + px.h + Math.round(3.6*PX), px.w-8);
+  }
+  // margin note stays in English: it is read by the print-shop operator
+  g.fillStyle = '#888'; g.font = `${Math.round(2.2*PX)}px sans-serif`;
+  g.fillText('Print at 100% / Actual Size, no "fit to page". Photo width must measure exactly ' + p.w + ' mm.', W/2, H - Math.round(1.5*PX));
+
+  sheetCanvas = c; sheetMM = sheet;
+  const pv = $('preview'); pv.width = 320; pv.height = Math.round(320*H/W);
+  pv.getContext('2d').drawImage(c, 0, 0, pv.width, pv.height);
+  $('result').style.display = 'block';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('result').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'});
+};
+
+/* ---------- export: JPG with real 300 DPI header ---------- */
+const toJpeg = canvas => new Promise(r => canvas.toBlob(r, 'image/jpeg', JPEG_Q));
+
+async function jpegWithDpi(canvas, dpi){
+  const buf = new Uint8Array(await (await toJpeg(canvas)).arrayBuffer());
+  const hi = dpi >> 8, lo = dpi & 255;
+  if (buf[2] === 0xFF && buf[3] === 0xE0) {           // JFIF APP0 present: patch density
+    buf[13] = 1; buf[14] = hi; buf[15] = lo; buf[16] = hi; buf[17] = lo;
+    return new Blob([buf], {type:'image/jpeg'});
+  }
+  const app0 = new Uint8Array([0xFF,0xE0,0,16,0x4A,0x46,0x49,0x46,0,1,1,1,hi,lo,hi,lo,0,0]);
+  return new Blob([buf.slice(0,2), app0, buf.slice(2)], {type:'image/jpeg'});
+}
+
+/* ---------- export: hand-rolled single-image PDF, true sheet size ---------- */
+async function makePdf(canvas, wMM, hMM){
+  const jpeg = new Uint8Array(await (await toJpeg(canvas)).arrayBuffer());
+  const wPt = (wMM*72/25.4).toFixed(2), hPt = (hMM*72/25.4).toFixed(2);
+  const enc = new TextEncoder(), chunks = [], off = [];
+  let pos = 0;
+  const push = s => { const b = typeof s === 'string' ? enc.encode(s) : s; chunks.push(b); pos += b.length; };
+  const obj = s => { off.push(pos); push(s); };
+  push('%PDF-1.4\n');
+  obj('1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n');
+  obj('2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n');
+  obj(`3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${wPt} ${hPt}]/Contents 4 0 R/Resources<</XObject<</I 5 0 R>>>>>>endobj\n`);
+  const cs = `q ${wPt} 0 0 ${hPt} 0 0 cm /I Do Q`;
+  obj(`4 0 obj<</Length ${cs.length}>>stream\n${cs}\nendstream endobj\n`);
+  off.push(pos);
+  push(`5 0 obj<</Type/XObject/Subtype/Image/Width ${canvas.width}/Height ${canvas.height}/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${jpeg.length}>>stream\n`);
+  push(jpeg);
+  push('\nendstream endobj\n');
+  const xref = pos;
+  push('xref\n0 6\n0000000000 65535 f \n' +
+    off.map(o => String(o).padStart(10,'0') + ' 00000 n \n').join('') +
+    `trailer<</Size 6/Root 1 0 R>>\nstartxref\n${xref}\n%%EOF`);
+  return new Blob(chunks, {type:'application/pdf'});
+}
+
+function save(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+$('dlJpg').onclick = async () => save(await jpegWithDpi(sheetCanvas, 300), 'passport-photos.jpg');
+$('dlPdf').onclick = async () => save(await makePdf(sheetCanvas, sheetMM.w, sheetMM.h), 'passport-photos.pdf');
+
+/* ---------- self-check: layout math + i18n key parity ---------- */
+(function(){
+  const tst = (s,w,h,cols,rows) => { const L = layout(SHEETS[s], w, h);
+    console.assert(L.cols===cols && L.rows===rows, `layout ${w}x${h} on ${s}: got ${L.cols}x${L.rows}, want ${cols}x${rows}`); };
+  tst('a4',35,45,5,6);   // 30 photos
+  tst('4x6',35,45,4,2);  // 8 photos
+  tst('a4',51,51,3,5);   // 15
+  tst('a4',20,25,8,10);  // 80
+  console.assert(Math.round(SHEETS.a4.w*PX)===2480 && Math.round(SHEETS.a4.h*PX)===3508, 'A4 px wrong');
+  const en = Object.keys(I18N.en);
+  for (const l of Object.keys(I18N)) {
+    const missing = en.filter(k => !(k in I18N[l]));
+    console.assert(!missing.length, `lang "${l}" missing keys: ${missing.join(', ')}`);
+  }
+})();
+</script>
+</body>
+</html>
